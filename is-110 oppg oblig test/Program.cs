@@ -72,10 +72,10 @@ while (true)
     Console.WriteLine("8) vise aktive og lån og historikk");
     Console.WriteLine("9) registrere bøker");
     Console.WriteLine("10) Vis all studenter lærere og utvekslingsstudenter");
-    Console.WriteLine("12) registrer ny student");
-    Console.WriteLine("13) registrer ny ansatt");
-    Console.WriteLine("14) registrer ny utvekslingsstudent");
-    Console.WriteLine("15) avslutt");
+    Console.WriteLine("11) registrer ny student");
+    Console.WriteLine("12) registrer ny ansatt");
+    Console.WriteLine("13) registrer ny utvekslingsstudent");
+    Console.WriteLine("14) avslutt");
 
     Console.Write("Choose:");
     var choice = Console.ReadLine();
