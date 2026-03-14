@@ -6,39 +6,30 @@ List<Student> students = new List<Student>();
 
 var student1 = new Student(1, "Elias", "ELi@uia.no", "IS-110");
 var student2 = new Student(2, "Ola", "ola@uia.no", "IS-112");
+var student3 = new Student(3, "Kari", "kari@uia.no", "IS-110");
 
 students.Add(student1);
 students.Add(student2);
-
-foreach (Student student in students)
-{
-    Console.WriteLine($"StudentID: {student.StudentID}, Navn: {student.StudentNavn}, E-post: {student.StudentEpost}, Kurs: {student.Kurs}");
-}
+students.Add(student3);
 
 //Utvekslingsstudent biten av å lage bruker og vise informasjon
 
 List<Utstudent> utstudenter = new List<Utstudent>();
 
-var utstudent1 = new Utstudent("Utvekslingsuniversitetet", "Utlandet", "August 2025 - Juni 2026");
+var utstudent1 = new Utstudent(100, "Lise", "lise@uia.no", "IS-110", "Utvekslingsuniversitetet", "Utlandet", "August 2025 - Juni 2026");
+var utstudent2 = new Utstudent(101, "Markus", "markus@uia.no", "IS-112", "Utvekslingsuniversitetet", "Utlandet", "August 2025 - Juni 2026");
 
 utstudenter.Add(utstudent1);
 
-foreach (Utstudent utstudent in utstudenter)
-{
-    Console.WriteLine($"Utvekslingsuniversitet: {utstudent.HjemUniversitet} Land: {utstudent.Land} Periode (fra-til): {utstudent.PeriodeFraTil}");
-}
 
 // Ansatt biten av å lage bruker og vise informasjon
 List<Ansatt> ansatte = new List<Ansatt>();
 
 var ansatt1 = new Ansatt(1, "Elias", "Eli@ansatt.no", "Foreleser", "Teknologi");
+var ansatt2 = new Ansatt(2, "Ola", "ola@ansatt.no","foreleser", "gruppesykologi");
 
 ansatte.Add(ansatt1);
 
-foreach (Ansatt ansatt in ansatte)
-{
-    Console.WriteLine($"AnsattID: {ansatt.AnsattID} Ansatt navn: {ansatt.AnsattNavn} E-post: {ansatt.AnsattEpost} Stilling: {ansatt.Stilling} Avdeling: {ansatt.Avdeling} ");
-}
 // kurs biten av å lage kurs og vise informasjon
 List<Kurs> kursene = new List<Kurs>();
 
@@ -48,13 +39,11 @@ var kurs2 = new Kurs("is-112", "Java programmering", 5, 20);
 kursene.Add(kurs1);
 kursene.Add(kurs2);
 
-foreach (Kurs kurs in kursene)
-{
-    Console.WriteLine($"Fagkode: {kurs.Fagkode} Kursnavn: {kurs.EmneNavn} studiepoing: {kurs.Studiepoeng} studentkapasitet {kurs.StudentKapasitet} ");
-}
+
+
 //liste med bøker 
 
-List<Book> books = new List<Book>
+List <Book> books = new List<Book>
 {
     new Book("C# Programming", "John Smith", 2015, 29.99),
     new Book("Advanced C#", "Jane Doe", 2020, 49.99),
@@ -64,7 +53,10 @@ List<Book> books = new List<Book>
     new Book("LINQ in Action", "Joe Brown", 2017, 24.99)
 };
 
+List<Loan> loans = new List<Loan>();
+
 string emneNavn = ""; // Declare and initialize emneNavn before the loop
+
 
 
 while (true)
@@ -79,7 +71,11 @@ while (true)
     Console.WriteLine("7) lever inn bøker ");
     Console.WriteLine("8) vise aktive og lån og historikk");
     Console.WriteLine("9) registrere bøker");
-    Console.WriteLine("10) avslutt");
+    Console.WriteLine("10) Vis all studenter lærere og utvekslingsstudenter");
+    Console.WriteLine("12) registrer ny student");
+    Console.WriteLine("13) registrer ny ansatt");
+    Console.WriteLine("14) registrer ny utvekslingsstudent");
+    Console.WriteLine("15) avslutt");
 
     Console.Write("Choose:");
     var choice = Console.ReadLine();
@@ -207,27 +203,44 @@ while (true)
             break;
 
              case "4": // søke på kurs
-            Console.Write("Search: ");
-            string? input = Console.ReadLine();
-            if (!string.IsNullOrEmpty(input))
+    Console.Write("Search course (code or name): ");
+    string? q = Console.ReadLine();
+    if (!string.IsNullOrWhiteSpace(q))
+    {
+        bool any = false;
+        foreach (var k in kursene)
+        {
+            if ((k.Fagkode?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false)
+                || (k.EmneNavn?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false))
             {
-                bool anyMatch = false;
-                foreach (var book in books)
+                any = true;
+                Console.WriteLine($"{k.Fagkode} | {k.EmneNavn} | Studiepoeng: {k.Studiepoeng} | Kapasitet: {k.StudentKapasitet}");
+            }
+        }
+        if (!any) Console.WriteLine("No course matches found.");
+    }
+    else
+    {
+        Console.WriteLine("No search text entered.");
+    }
+    break;
+
+         case "5": // søke på bøker
+             Console.Write("Search books (title or author): ");
+            string? search = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                bool found = false;
+                foreach (var b in books)
                 {
-                    // check title or author (case-insensitive)
-                    if ((book.Title?.Contains(input, StringComparison.OrdinalIgnoreCase) ?? false)
-                        || (book.Author?.Contains(input, StringComparison.OrdinalIgnoreCase) ?? false))
+                    if ((b.Title?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false)
+                        || (b.Author?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false))
                     {
-                        anyMatch = true;
-                        Console.WriteLine("Match found:");
-                        Console.WriteLine($"{book.Title} | {book.Author} | {book.Year} | {book.Price:C}");
+                        found = true;
+                        Console.WriteLine($"{b.Title} by {b.Author} ({b.Year}) - ${b.Price}");
                     }
                 }
-
-                if (!anyMatch)
-                {
-                    Console.WriteLine("No matches found.");
-                }
+                if (!found) Console.WriteLine("No books match found.");
             }
             else
             {
@@ -235,14 +248,239 @@ while (true)
             }
             break;
 
-        // case "5": // søke på bøker
-        // case "6": // låne ut
-        // case "7": // lever inn bøker
-        // case "8": // vise aktive og lån og historikk
-        // case "9": // registrere bøker
-        case "10":
+         case "6": // låne ut
+                Console.WriteLine("Låne ut bøker - funksjonalitet ikke implementert ennå.");
+            Console.WriteLine("Låne ut bok:");
+            Console.Write("StudentID: ");
+            if (int.TryParse(Console.ReadLine(), out int lånerId))
+            {
+                var lånerStudent = students.Find(s => s.StudentID == lånerId);
+
+                if (lånerStudent == null)
+                {
+                    Console.WriteLine("Student ikke funnet.");
+                }
+                else
+                {
+                    Console.WriteLine($"Student funnet: {lånerStudent.StudentNavn}");
+
+                    Console.WriteLine("\nTilgjengelige bøker:");
+                    var tilgjengeligeBøker = books.Where(b => b.IsAvailable).ToList();
+
+                    if (tilgjengeligeBøker.Count == 0)
+                    {
+                        Console.WriteLine("Ingen bøker er tilgjengelige for utlån.");
+                    }
+                    else
+                    {
+                        for (int i = 0; i < tilgjengeligeBøker.Count; i++)
+                        {
+                            var b = tilgjengeligeBøker[i];
+                            Console.WriteLine($"{i + 1}. {b.Title} av {b.Author} ({b.Year}) - {b.Price} kr");
+                        }
+
+                        Console.Write("\nVelg bok nummer: ");
+                        if (!int.TryParse(Console.ReadLine(), out int bokNr))
+                        {
+                            Console.WriteLine("Ugyldig input. Må være et tall.");
+                        }
+                        else if (bokNr < 1 || bokNr > tilgjengeligeBøker.Count)
+                        {
+                            Console.WriteLine($"Ugyldig valg. Velg mellom 1 og {tilgjengeligeBøker.Count}.");
+                        }
+                        else
+                        {
+                            var valgtBok = tilgjengeligeBøker[bokNr - 1];
+                            valgtBok.IsAvailable = false;
+                            loans.Add(new Loan(lånerId, valgtBok.Title, DateTime.Now));
+                            Console.WriteLine($"\n✓ {lånerStudent.StudentNavn} har lånt '{valgtBok.Title}'.");
+                        }
+                    }
+                }
+            }
+
+
+            break;
+
+         case "7": // lever inn bøker
+             Console.WriteLine("Levere inn bøker - funksjonalitet ikke implementert ennå.");
+            Console.WriteLine("Levere inn bok:");
+            Console.Write("StudentID: ");
+            if (!int.TryParse(Console.ReadLine(), out int returStudentId))
+            {
+                Console.WriteLine("Ugyldig studentID.");
+                break;
+            }
+
+            var aktiveLån = loans.Where(l => l.StudentID == returStudentId && l.IsActive).ToList();
+
+            if (aktiveLån.Count == 0)
+            {
+                Console.WriteLine("Ingen aktive lån for denne studenten.");
+                break;
+            }
+
+            Console.WriteLine("\nAktive lån:");
+            for (int i = 0; i < aktiveLån.Count; i++)
+            {
+                var lån = aktiveLån[i];
+                Console.WriteLine($"{i + 1}. {lån.BookTitle} (lånt: {lån.LoanDate:dd.MM.yyyy})");
+            }
+
+            Console.Write("\nVelg bok nummer å levere inn: ");
+            if (!int.TryParse(Console.ReadLine(), out int lånNr) || lånNr < 1 || lånNr > aktiveLån.Count)
+            {
+                Console.WriteLine("Ugyldig valg.");
+                break;
+            }
+
+            var returLån = aktiveLån[lånNr - 1];
+            returLån.IsActive = false;
+            returLån.ReturnDate = DateTime.Now;
+
+            var returBok = books.Find(b => b.Title == returLån.BookTitle);
+            if (returBok != null)
+            {
+                returBok.IsAvailable = true;
+            }
+
+            Console.WriteLine($"Bok '{returLån.BookTitle}' er returnert.");
+           
+            break;
+
+         case "8":// vise aktive og lån og historikk
+             Console.WriteLine("Vis aktive lån og historikk - funksjonalitet ikke implementert ennå.");
+            var aktive = loans.Where(l => l.IsActive).ToList();
+
+            if (aktive.Count == 0)
+            {
+                Console.WriteLine("Ingen aktive lån.");
+            }
+            else
+            {
+                foreach (var lån in aktive)
+                {
+                    var student = students.Find(s => s.StudentID == lån.StudentID);
+                    string studentNavn = student != null ? student.StudentNavn : "Ukjent";
+                    Console.WriteLine($"StudentID: {lån.StudentID} ({studentNavn}) - Bok: {lån.BookTitle} - Lånt: {lån.LoanDate:dd.MM.yyyy}");
+                }
+            }
+
+            Console.WriteLine("\n=== HISTORIKK (Returnerte lån) ===");
+            var historikk = loans.Where(l => !l.IsActive).ToList();
+
+            if (historikk.Count == 0)
+            {
+                Console.WriteLine("Ingen historikk.");
+            }
+            else
+            {
+                foreach (var lån in historikk)
+                {
+                    var student = students.Find(s => s.StudentID == lån.StudentID);
+                    string studentNavn = student != null ? student.StudentNavn : "Ukjent";
+                    Console.WriteLine($"StudentID: {lån.StudentID} ({studentNavn}) - Bok: {lån.BookTitle} - Lånt: {lån.LoanDate:dd.MM.yyyy} - Returnert: {lån.ReturnDate:dd.MM.yyyy}");
+                }
+            }
+            break;
+
+        case "9": // registrere bøker
+            Console.WriteLine("Registrere ny bok:");
+            Console.Write("Tittel: ");
+            var tittel = Console.ReadLine() ?? "";
+            Console.Write("Forfatter: ");
+            var forfatter = Console.ReadLine() ?? "";
+            Console.Write("År: ");
+            if (!int.TryParse(Console.ReadLine(), out int år)) år = 0;
+            Console.Write("Pris: ");
+            if (!double.TryParse(Console.ReadLine(), out double pris)) pris = 0.0;
+            books.Add(new Book(tittel, forfatter, år, pris));
+            Console.WriteLine($"Bok registrert: {tittel} av {forfatter}.");
+            break;
+
+        case "10": // vis all studenter lærere og utvekslingsstudenter
+            Console.WriteLine("\nHer er Studenter:");
+            foreach (var s in students)
+            {
+                
+                Console.WriteLine($"  {s.StudentID}: {s.StudentNavn} ({s.StudentEpost}) - Kurs: {s.Kurs}");
+            }
+            Console.WriteLine("\nHer er alle Ansatte:");
+            foreach (var a in ansatte)
+
+            {
+                Console.WriteLine($"  {a.AnsattID}: {a.AnsattNavn} ({a.AnsattEpost}) - Stilling: {a.Stilling}, Avdeling: {a.Avdeling}");
+            }
+            Console.WriteLine("\nHer er alle Utvekslingsstudenter:");
+            foreach (var u in utstudenter)
+            {
+                   
+                Console.WriteLine($"{u.HjemUniversitet} - Land: {u.Land}, Periode: {u.PeriodeFraTil}");
+            }
+            break;
+        case "11": // registrer ny student
+            Console.WriteLine("Registrere ny student:");
+            Console.Write("StudentID: ");
+            if (!int.TryParse(Console.ReadLine(), out int nyStudentId))
+            {
+                Console.WriteLine("Ugyldig studentID.");
+                break;
+            }
+            Console.Write("Navn: ");
+            string nyStudentNavn = Console.ReadLine() ?? "";
+            Console.Write("Epost: ");
+            string nyStudentEpost = Console.ReadLine() ?? "";
+            Console.Write("Kurs (fagkode): ");
+            string nyStudentKurs = Console.ReadLine() ?? "";
+
+            students.Add(new Student(nyStudentId, nyStudentNavn, nyStudentEpost, nyStudentKurs));
+            Console.WriteLine($"Student {nyStudentNavn} (ID: {nyStudentId}) er registrert.");
+            break;
+
+        case "12": // registrer ny ansatt
+            Console.WriteLine("Registrere ny ansatt:");
+            Console.Write("AnsattID: ");
+            if (!int.TryParse(Console.ReadLine(), out int nyAnsattId))
+            {
+                Console.WriteLine("Ugyldig ansattID.");
+                break;
+            }
+            Console.Write("Navn: ");
+            string nyAnsattNavn = Console.ReadLine() ?? "";
+            Console.Write("Epost: ");
+            string nyAnsattEpost = Console.ReadLine() ?? "";
+            Console.Write("Stilling: ");
+            string nyAnsattStilling = Console.ReadLine() ?? "";
+            Console.Write("Avdeling: ");
+            string nyAnsattAvdeling = Console.ReadLine() ?? "";
+
+            ansatte.Add(new Ansatt(nyAnsattId, nyAnsattNavn, nyAnsattEpost, nyAnsattStilling, nyAnsattAvdeling));
+            Console.WriteLine($"Ansatt {nyAnsattNavn} (ID: {nyAnsattId}) er registrert.");
+            break;
+
+        case "13": // registrer ny utvekslingsstudent
+            Console.WriteLine("Registrere ny utvekslingsstudent:");
+            Console.Write("Navn: ");
+            string nyutStudentNavn = Console.ReadLine() ?? "";
+            Console.Write("Epost: ");
+            string nyutStudentEpost = Console.ReadLine() ?? "";
+            Console.Write("Kurs (fagkode): ");
+            string nyutStudentKurs = Console.ReadLine() ?? "";
+            Console.Write("Hjem universitet: ");
+            string hjemUniversitet = Console.ReadLine() ?? "";
+            Console.Write("Land: ");
+            string land = Console.ReadLine() ?? "";
+            Console.Write("Periode (f.eks. August 2025 - Juni 2026): ");
+            string periode = Console.ReadLine() ?? "";
+
+            int newUtId = students.Count + utstudenter.Count + 1;
+            utstudenter.Add(new Utstudent(newUtId, nyutStudentNavn, nyutStudentEpost, nyutStudentKurs, hjemUniversitet, land, periode));
+            Console.WriteLine($"Utvekslingsstudent navn: {nyutStudentNavn}fra {hjemUniversitet} er registrert.");
+            break;
+
+        case "14": // avslutt
             Console.WriteLine("Tall for at du prukte programmet nå lukker det seg ha en fin dag");
-            return; // avslutt
+            return;
     }
 }
 
