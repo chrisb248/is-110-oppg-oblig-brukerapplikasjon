@@ -20,8 +20,8 @@ namespace is_110_oppg_oblig_test
             Studiepoeng = studiepoeng;
             StudentKapasitet = studentKapasitet;
         }
+       
 
-        
 
 
     }

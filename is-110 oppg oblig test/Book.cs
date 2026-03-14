@@ -11,6 +11,8 @@ namespace is_110_oppg_oblig_test
         public int Year { get; set; }
         public double Price { get; set; }
 
+        public bool IsAvailable { get; set; } = true;
+
         public Book(string title, string author, int year, double price)
         {
             Title = title;
@@ -18,6 +20,6 @@ namespace is_110_oppg_oblig_test
             Year = year;
             Price = price;
         }
-
+        record Loan(int BookIndex, int StudentId, DateTime Loaned, DateTime? Returned = null);
     }
 }
