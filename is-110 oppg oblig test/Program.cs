@@ -187,6 +187,7 @@ while (true)
                 // Finn studenter hvor Student.Kurs matcher kursets Fagkode
                 Console.WriteLine($" {k.Fagkode}: {k.EmneNavn} (kapasitet: {k.StudentKapasitet})");
                 Console.WriteLine("  Studenter meldt på dette kurset:");
+                Console.WriteLine("  --------------------------------------");
                 var påmeldte = students.Where(s => string.Equals(s.Kurs, k.Fagkode, StringComparison.OrdinalIgnoreCase)).ToList();
                 if (påmeldte.Count == 0)
                 {
@@ -204,14 +205,14 @@ while (true)
 
              case "4": // søke på kurs
     Console.Write("Search course (code or name): ");
-    string? q = Console.ReadLine();
-    if (!string.IsNullOrWhiteSpace(q))
+    string? søke = Console.ReadLine();
+    if (!string.IsNullOrWhiteSpace(søke))
     {
         bool any = false;
         foreach (var k in kursene)
         {
-            if ((k.Fagkode?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false)
-                || (k.EmneNavn?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false))
+            if ((k.Fagkode?.Contains(søke, StringComparison.OrdinalIgnoreCase) ?? false)
+                || (k.EmneNavn?.Contains(søke, StringComparison.OrdinalIgnoreCase) ?? false))
             {
                 any = true;
                 Console.WriteLine($"{k.Fagkode} | {k.EmneNavn} | Studiepoeng: {k.Studiepoeng} | Kapasitet: {k.StudentKapasitet}");
@@ -249,7 +250,7 @@ while (true)
             break;
 
          case "6": // låne ut
-                Console.WriteLine("Låne ut bøker - funksjonalitet ikke implementert ennå.");
+                
             Console.WriteLine("Låne ut bok:");
             Console.Write("StudentID: ");
             if (int.TryParse(Console.ReadLine(), out int lånerId))
@@ -303,7 +304,7 @@ while (true)
             break;
 
          case "7": // lever inn bøker
-             Console.WriteLine("Levere inn bøker - funksjonalitet ikke implementert ennå.");
+            
             Console.WriteLine("Levere inn bok:");
             Console.Write("StudentID: ");
             if (!int.TryParse(Console.ReadLine(), out int returStudentId))
@@ -349,7 +350,7 @@ while (true)
             break;
 
          case "8":// vise aktive og lån og historikk
-             Console.WriteLine("Vis aktive lån og historikk - funksjonalitet ikke implementert ennå.");
+           
             var aktive = loans.Where(l => l.IsActive).ToList();
 
             if (aktive.Count == 0)
