@@ -19,9 +19,6 @@ namespace is_110_oppg_oblig_test
             Kurs = kurs;
         }
 
-        public void VisInformasjon()
-        {
-            Console.WriteLine($"StudentID: {StudentID} Navn: {StudentNavn}");
-        }
+      
     }
 }
