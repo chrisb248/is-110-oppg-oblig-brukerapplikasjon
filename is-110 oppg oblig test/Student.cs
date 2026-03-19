@@ -4,21 +4,19 @@ using System.Text;
 
 namespace is_110_oppg_oblig_test
 {
-    public class Student
+    public class Student : Person
     {
-        public int StudentID { get; set; }
-        public string StudentNavn { get; set; }
-        public string StudentEpost { get; set; }
         public string Kurs { get; set; }
 
         public Student(int studentID, string studentnavn, string studentepost, string kurs)
+            : base(studentID, studentnavn, studentepost)
         {
-            StudentID = studentID;
-            StudentNavn = studentnavn;
-            StudentEpost = studentepost;
             Kurs = kurs;
         }
 
-      
+        public override string VisInfo()
+        {
+            return $"{Id}: {Navn} ({Epost}) - Kurs: {Kurs}";
+        }
     }
 }

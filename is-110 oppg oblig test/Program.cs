@@ -119,7 +119,7 @@ while (true)
                 break;
             }
 
-            var stud = students.Find(s => s.StudentID == studentId);
+            var stud = students.Find(s => s.Id == studentId);
             if (stud == null)
             {
                 Console.WriteLine("Student ikke funnet.");
@@ -145,6 +145,7 @@ while (true)
             if (!int.TryParse(Console.ReadLine(), out int valg))
             {
                 Console.WriteLine("Ugyldig valg.");
+
                 break;
             }
 
@@ -159,7 +160,7 @@ while (true)
                 else
                 {
                     stud.Kurs = kursObj.Fagkode; // OPPDATERER data — dette lagres i minnet
-                    Console.WriteLine($"{stud.StudentNavn} (ID {stud.StudentID}) er meldt på {kursObj.Fagkode}.");
+                    Console.WriteLine($"{stud.Navn} (ID {stud.Id}) er meldt på {kursObj.Fagkode}.");
                 }
             }
             else if (valg == 2)
@@ -167,7 +168,7 @@ while (true)
                 if (string.Equals(stud.Kurs, kursObj.Fagkode, StringComparison.OrdinalIgnoreCase))
                 {
                     stud.Kurs = ""; // fjern påmelding
-                    Console.WriteLine($"Student {stud.StudentNavn} er meldt av {kursObj.Fagkode}.");
+                    Console.WriteLine($"Student {stud.Navn} er meldt av {kursObj.Fagkode}.");
                 }
                 else
                 {
@@ -197,7 +198,7 @@ while (true)
                 {
                     foreach (var st in påmeldte)
                     {
-                        Console.WriteLine($"    {st.StudentID}: {st.StudentNavn} ({st.StudentEpost})");
+                        Console.WriteLine($"    {st.Id}: {st.Navn} ({st.Epost})");
                     }
                 }
             }
@@ -255,7 +256,7 @@ while (true)
             Console.Write("StudentID: ");
             if (int.TryParse(Console.ReadLine(), out int lånerId))
             {
-                var lånerStudent = students.Find(s => s.StudentID == lånerId);
+                var lånerStudent = students.Find(s => s.Id == lånerId);
 
                 if (lånerStudent == null)
                 {
@@ -263,7 +264,7 @@ while (true)
                 }
                 else
                 {
-                    Console.WriteLine($"Student funnet: {lånerStudent.StudentNavn}");
+                    Console.WriteLine($"Student funnet: {lånerStudent.Navn}");
 
                     Console.WriteLine("\nTilgjengelige bøker:");
                     var tilgjengeligeBøker = books.Where(b => b.IsAvailable).ToList();
@@ -294,7 +295,7 @@ while (true)
                             var valgtBok = tilgjengeligeBøker[bokNr - 1];
                             valgtBok.IsAvailable = false;
                             loans.Add(new Loan(lånerId, valgtBok.Title, DateTime.Now));
-                            Console.WriteLine($"\n✓ {lånerStudent.StudentNavn} har lånt '{valgtBok.Title}'.");
+                            Console.WriteLine($"\n✓ {lånerStudent.Navn} har lånt '{valgtBok.Title}'.");
                         }
                     }
                 }
@@ -361,8 +362,8 @@ while (true)
             {
                 foreach (var lån in aktive)
                 {
-                    var student = students.Find(s => s.StudentID == lån.StudentID);
-                    string studentNavn = student != null ? student.StudentNavn : "Ukjent";
+                    var student = students.Find(s => s.Id == lån.StudentID);
+                    string studentNavn = student != null ? student.Navn : "Ukjent";
                     Console.WriteLine($"StudentID: {lån.StudentID} ({studentNavn}) - Bok: {lån.BookTitle} - Lånt: {lån.LoanDate:dd.MM.yyyy}");
                 }
             }
@@ -378,8 +379,8 @@ while (true)
             {
                 foreach (var lån in historikk)
                 {
-                    var student = students.Find(s => s.StudentID == lån.StudentID);
-                    string studentNavn = student != null ? student.StudentNavn : "Ukjent";
+                    var student = students.Find(s => s.Id == lån.StudentID);
+                    string studentNavn = student != null ? student.Navn : "Ukjent";
                     Console.WriteLine($"StudentID: {lån.StudentID} ({studentNavn}) - Bok: {lån.BookTitle} - Lånt: {lån.LoanDate:dd.MM.yyyy} - Returnert: {lån.ReturnDate:dd.MM.yyyy}");
                 }
             }
@@ -399,24 +400,18 @@ while (true)
             Console.WriteLine($"Bok registrert: {tittel} av {forfatter}.");
             break;
 
-        case "10": // vis all studenter lærere og utvekslingsstudenter
-            Console.WriteLine("\nHer er Studenter:");
-            foreach (var s in students)
-            {
-                
-                Console.WriteLine($"  {s.StudentID}: {s.StudentNavn} ({s.StudentEpost}) - Kurs: {s.Kurs}");
-            }
-            Console.WriteLine("\nHer er alle Ansatte:");
-            foreach (var a in ansatte)
+        case "10": // vis all studenter lærere og utvekslingsstudenter (polymorfisme)
+            // Bruk av polymorfisme: alle Person-objekter i én liste via IPerson-interfacet
+            List<IPerson> allePersoner = new List<IPerson>();
+            allePersoner.AddRange(students);
+            allePersoner.AddRange(ansatte);
+            allePersoner.AddRange(utstudenter);
 
+            Console.WriteLine("\nAlle personer i systemet (via polymorfisme):");
+            foreach (var person in allePersoner)
             {
-                Console.WriteLine($"  {a.AnsattID}: {a.AnsattNavn} ({a.AnsattEpost}) - Stilling: {a.Stilling}, Avdeling: {a.Avdeling}");
-            }
-            Console.WriteLine("\nHer er alle Utvekslingsstudenter:");
-            foreach (var u in utstudenter)
-            {
-                   
-                Console.WriteLine($"{u.HjemUniversitet} - Land: {u.Land}, Periode: {u.PeriodeFraTil}");
+                // VisInfo() kaller riktig override avhengig av faktisk type
+                Console.WriteLine($"  [{person.GetType().Name}] {person.VisInfo()}");
             }
             break;
         case "11": // registrer ny student

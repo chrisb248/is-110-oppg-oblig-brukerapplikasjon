@@ -19,5 +19,10 @@ namespace is_110_oppg_oblig_test
             Land = land;
             PeriodeFraTil = periodeFraTil;
         }
+
+        public override string VisInfo()
+        {
+            return $"{Id}: {Navn} ({Epost}) - Kurs: {Kurs}, Universitet: {HjemUniversitet}, Land: {Land}, Periode: {PeriodeFraTil}";
+        }
     }
 }

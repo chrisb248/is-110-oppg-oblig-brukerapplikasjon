@@ -4,21 +4,21 @@ using System.Text;
 
 namespace is_110_oppg_oblig_test
 {
-    public class Ansatt
+    public class Ansatt : Person
     {
-        public int AnsattID { get; set; }
-        public string AnsattNavn { get; set; }
-        public string AnsattEpost { get; set; }
         public string Stilling { get; set; }
         public string Avdeling { get; set; }
 
         public Ansatt(int ansattID, string ansattNavn, string ansattEpost, string stilling, string avdeling)
+            : base(ansattID, ansattNavn, ansattEpost)
         {
-            AnsattID = ansattID;
-            AnsattNavn = ansattNavn;
-            AnsattEpost = ansattEpost;
             Stilling = stilling;
             Avdeling = avdeling;
+        }
+
+        public override string VisInfo()
+        {
+            return $"{Id}: {Navn} ({Epost}) - Stilling: {Stilling}, Avdeling: {Avdeling}";
         }
     }
 }
