@@ -14,10 +14,10 @@ students.Add(student3);
 
 //Utvekslingsstudent biten av å lage bruker og vise informasjon
 
-List<Utstudent> utstudenter = new List<Utstudent>();
+List<Utvekslingsstudent> utstudenter = new List<Utvekslingsstudent>();
 
-var utstudent1 = new Utstudent(100, "Lise", "lise@uia.no", "IS-110", "Utvekslingsuniversitetet", "Utlandet", "August 2025 - Juni 2026");
-var utstudent2 = new Utstudent(101, "Markus", "markus@uia.no", "IS-112", "Utvekslingsuniversitetet", "Utlandet", "August 2025 - Juni 2026");
+var utstudent1 = new Utvekslingsstudent(100, "Lise", "lise@uia.no", "IS-110", "Utvekslingsuniversitetet", "Utlandet", "August 2025 - Juni 2026");
+var utstudent2 = new Utvekslingsstudent(101, "Markus", "markus@uia.no", "IS-112", "Utvekslingsuniversitetet", "Utlandet", "August 2025 - Juni 2026");
 
 utstudenter.Add(utstudent1);
 
@@ -475,12 +475,12 @@ while (true)
             string periode = Console.ReadLine() ?? "";
 
             int newUtId = students.Count + utstudenter.Count + 1;
-            utstudenter.Add(new Utstudent(newUtId, nyutStudentNavn, nyutStudentEpost, nyutStudentKurs, hjemUniversitet, land, periode));
+            utstudenter.Add(new Utvekslingsstudent(newUtId, nyutStudentNavn, nyutStudentEpost, nyutStudentKurs, hjemUniversitet, land, periode));
             Console.WriteLine($"Utvekslingsstudent navn: {nyutStudentNavn}fra {hjemUniversitet} er registrert.");
             break;
 
         case "14": // avslutt
-            Console.WriteLine("Tall for at du prukte programmet nå lukker det seg ha en fin dag");
+            Console.WriteLine("Takk for at du brukte programmet nå lukker det seg ha en fin dag");
             return;
     }
 }
