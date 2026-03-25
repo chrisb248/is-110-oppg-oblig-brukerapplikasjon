@@ -2,8 +2,11 @@
 using is_110_oppg_oblig_test;
 using System.Threading.Channels;
 
+// KRAV 4: Kolleksjoner - List<T> for å holde mange objekter
+// KRAV 1: Variabler og datatyper - int, string, double, bool, DateTime
 List<Student> students = new List<Student>();
 
+// KRAV 7: Objekter - oppretter instanser av klassen Student
 var student1 = new Student(1, "Elias", "ELi@uia.no", "IS-110");
 var student2 = new Student(2, "Ola", "ola@uia.no", "IS-112");
 var student3 = new Student(3, "Kari", "kari@uia.no", "IS-110");
@@ -59,6 +62,7 @@ string emneNavn = ""; // Declare and initialize emneNavn before the loop
 
 
 
+// KRAV 5: Løkke - while-løkke for hovedmenyen
 while (true)
 {
     Console.WriteLine();
@@ -81,6 +85,7 @@ while (true)
     var choice = Console.ReadLine();
 
     if (choice == "0") break;
+    // KRAV 6: IF-betingelser - switch/case for menyvalg
     switch (choice)
     {
         case "1":
@@ -119,7 +124,7 @@ while (true)
                 break;
             }
 
-            var stud = students.Find(s => s.StudentID == studentId);
+            var stud = students.Find(s => s.Id == studentId);
             if (stud == null)
             {
                 Console.WriteLine("Student ikke funnet.");
@@ -159,7 +164,7 @@ while (true)
                 else
                 {
                     stud.Kurs = kursObj.Fagkode; // OPPDATERER data — dette lagres i minnet
-                    Console.WriteLine($"{stud.StudentNavn} (ID {stud.StudentID}) er meldt på {kursObj.Fagkode}.");
+                    Console.WriteLine($"{stud.Navn} (ID {stud.Id}) er meldt på {kursObj.Fagkode}.");
                 }
             }
             else if (valg == 2)
@@ -167,7 +172,7 @@ while (true)
                 if (string.Equals(stud.Kurs, kursObj.Fagkode, StringComparison.OrdinalIgnoreCase))
                 {
                     stud.Kurs = ""; // fjern påmelding
-                    Console.WriteLine($"Student {stud.StudentNavn} er meldt av {kursObj.Fagkode}.");
+                    Console.WriteLine($"Student {stud.Navn} er meldt av {kursObj.Fagkode}.");
                 }
                 else
                 {
@@ -197,7 +202,7 @@ while (true)
                 {
                     foreach (var st in påmeldte)
                     {
-                        Console.WriteLine($"    {st.StudentID}: {st.StudentNavn} ({st.StudentEpost})");
+                        Console.WriteLine($"    {st.Id}: {st.Navn} ({st.Epost})");
                     }
                 }
             }
@@ -208,15 +213,18 @@ while (true)
     string? søke = Console.ReadLine();
     if (!string.IsNullOrWhiteSpace(søke))
     {
+        // KRAV 8: LINQ query-syntaks med where, orderby og select
+        var kursResultater = from k in kursene
+                             where (k.Fagkode?.Contains(søke, StringComparison.OrdinalIgnoreCase) ?? false)
+                                || (k.EmneNavn?.Contains(søke, StringComparison.OrdinalIgnoreCase) ?? false)
+                             orderby k.Fagkode
+                             select k;
+
         bool any = false;
-        foreach (var k in kursene)
+        foreach (var k in kursResultater)
         {
-            if ((k.Fagkode?.Contains(søke, StringComparison.OrdinalIgnoreCase) ?? false)
-                || (k.EmneNavn?.Contains(søke, StringComparison.OrdinalIgnoreCase) ?? false))
-            {
-                any = true;
-                Console.WriteLine($"{k.Fagkode} | {k.EmneNavn} | Studiepoeng: {k.Studiepoeng} | Kapasitet: {k.StudentKapasitet}");
-            }
+            any = true;
+            Console.WriteLine($"{k.Fagkode} | {k.EmneNavn} | Studiepoeng: {k.Studiepoeng} | Kapasitet: {k.StudentKapasitet}");
         }
         if (!any) Console.WriteLine("No course matches found.");
     }
@@ -231,17 +239,25 @@ while (true)
             string? search = Console.ReadLine();
             if (!string.IsNullOrWhiteSpace(search))
             {
-                bool found = false;
-                foreach (var b in books)
+                // KRAV 8: LINQ method-syntaks med Where, OrderBy og Select (projeksjon)
+                var bokResultater = books
+                    .Where(b => (b.Title?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false)
+                             || (b.Author?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false))
+                    .OrderBy(b => b.Title)
+                    .Select(b => new { b.Title, b.Author, b.Year, b.Price, Status = b.IsAvailable ? "Tilgjengelig" : "Utlånt" })
+                    .ToList();
+
+                if (bokResultater.Count == 0)
                 {
-                    if ((b.Title?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false)
-                        || (b.Author?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false))
+                    Console.WriteLine("No books match found.");
+                }
+                else
+                {
+                    foreach (var b in bokResultater)
                     {
-                        found = true;
-                        Console.WriteLine($"{b.Title} by {b.Author} ({b.Year}) - ${b.Price}");
+                        Console.WriteLine($"{b.Title} by {b.Author} ({b.Year}) - ${b.Price} [{b.Status}]");
                     }
                 }
-                if (!found) Console.WriteLine("No books match found.");
             }
             else
             {
@@ -255,7 +271,7 @@ while (true)
             Console.Write("StudentID: ");
             if (int.TryParse(Console.ReadLine(), out int lånerId))
             {
-                var lånerStudent = students.Find(s => s.StudentID == lånerId);
+                var lånerStudent = students.Find(s => s.Id == lånerId);
 
                 if (lånerStudent == null)
                 {
@@ -263,7 +279,7 @@ while (true)
                 }
                 else
                 {
-                    Console.WriteLine($"Student funnet: {lånerStudent.StudentNavn}");
+                    Console.WriteLine($"Student funnet: {lånerStudent.Navn}");
 
                     Console.WriteLine("\nTilgjengelige bøker:");
                     var tilgjengeligeBøker = books.Where(b => b.IsAvailable).ToList();
@@ -294,7 +310,7 @@ while (true)
                             var valgtBok = tilgjengeligeBøker[bokNr - 1];
                             valgtBok.IsAvailable = false;
                             loans.Add(new Loan(lånerId, valgtBok.Title, DateTime.Now));
-                            Console.WriteLine($"\n✓ {lånerStudent.StudentNavn} har lånt '{valgtBok.Title}'.");
+                            Console.WriteLine($"\n✓ {lånerStudent.Navn} har lånt '{valgtBok.Title}'.");
                         }
                     }
                 }
@@ -361,8 +377,8 @@ while (true)
             {
                 foreach (var lån in aktive)
                 {
-                    var student = students.Find(s => s.StudentID == lån.StudentID);
-                    string studentNavn = student != null ? student.StudentNavn : "Ukjent";
+                    var student = students.Find(s => s.Id == lån.StudentID);
+                    string studentNavn = student != null ? student.Navn : "Ukjent";
                     Console.WriteLine($"StudentID: {lån.StudentID} ({studentNavn}) - Bok: {lån.BookTitle} - Lånt: {lån.LoanDate:dd.MM.yyyy}");
                 }
             }
@@ -378,8 +394,8 @@ while (true)
             {
                 foreach (var lån in historikk)
                 {
-                    var student = students.Find(s => s.StudentID == lån.StudentID);
-                    string studentNavn = student != null ? student.StudentNavn : "Ukjent";
+                    var student = students.Find(s => s.Id == lån.StudentID);
+                    string studentNavn = student != null ? student.Navn : "Ukjent";
                     Console.WriteLine($"StudentID: {lån.StudentID} ({studentNavn}) - Bok: {lån.BookTitle} - Lånt: {lån.LoanDate:dd.MM.yyyy} - Returnert: {lån.ReturnDate:dd.MM.yyyy}");
                 }
             }
@@ -400,23 +416,37 @@ while (true)
             break;
 
         case "10": // vis all studenter lærere og utvekslingsstudenter
-            Console.WriteLine("\nHer er Studenter:");
-            foreach (var s in students)
-            {
-                
-                Console.WriteLine($"  {s.StudentID}: {s.StudentNavn} ({s.StudentEpost}) - Kurs: {s.Kurs}");
-            }
-            Console.WriteLine("\nHer er alle Ansatte:");
-            foreach (var a in ansatte)
 
+            // KRAV 11: Interface brukt som type - alle persontyper i én liste
+            List<IPerson> allePersoner = new List<IPerson>();
+            allePersoner.AddRange(students);
+            allePersoner.AddRange(ansatte);
+            allePersoner.AddRange(utstudenter);
+
+            // LINQ: sorter alle personer etter navn
+            var sortert = allePersoner.OrderBy(p => p.Navn).ToList();
+
+            Console.WriteLine("\nAlle personer (sortert etter navn):");
+            foreach (var person in sortert)
             {
-                Console.WriteLine($"  {a.AnsattID}: {a.AnsattNavn} ({a.AnsattEpost}) - Stilling: {a.Stilling}, Avdeling: {a.Avdeling}");
+                // KRAV 10: Polymorfisme - VisInfo() gir ulik output for Student, Ansatt, Utvekslingsstudent
+                    Console.WriteLine($"  {person.VisInfo()}");
             }
-            Console.WriteLine("\nHer er alle Utvekslingsstudenter:");
-            foreach (var u in utstudenter)
+
+            // KRAV 8: LINQ query-syntaks med GroupBy
+            Console.WriteLine("\nStudenter gruppert etter kurs:");
+            var gruppert = from s in students
+                           group s by s.Kurs into g
+                           orderby g.Key
+                           select g;
+
+            foreach (var gruppe in gruppert)
             {
-                   
-                Console.WriteLine($"{u.HjemUniversitet} - Land: {u.Land}, Periode: {u.PeriodeFraTil}");
+                Console.WriteLine($"  Kurs: {(string.IsNullOrEmpty(gruppe.Key) ? "Ingen" : gruppe.Key)}");
+                foreach (var s in gruppe)
+                {
+                    Console.WriteLine($"    {s.Id}: {s.Navn}");
+                }
             }
             break;
         case "11": // registrer ny student

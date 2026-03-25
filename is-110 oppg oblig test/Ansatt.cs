@@ -4,21 +4,23 @@ using System.Text;
 
 namespace is_110_oppg_oblig_test
 {
-    public class Ansatt
+    // KRAV 7: Klasse  |  KRAV 9: Arv - Ansatt arver fra Person
+    public class Ansatt : Person
     {
-        public int AnsattID { get; set; }
-        public string AnsattNavn { get; set; }
-        public string AnsattEpost { get; set; }
         public string Stilling { get; set; }
         public string Avdeling { get; set; }
 
-        public Ansatt(int ansattID, string ansattNavn, string ansattEpost, string stilling, string avdeling)
+        public Ansatt(int id, string navn, string epost, string stilling, string avdeling)
+            : base(id, navn, epost)
         {
-            AnsattID = ansattID;
-            AnsattNavn = ansattNavn;
-            AnsattEpost = ansattEpost;
             Stilling = stilling;
             Avdeling = avdeling;
+        }
+
+        // KRAV 10: Polymorfisme - override gir annen output enn Student.VisInfo()
+        public override string VisInfo()
+        {
+            return $"Ansatt {Id}: {Navn} ({Epost}) - Stilling: {Stilling}, Avdeling: {Avdeling}";
         }
     }
 }

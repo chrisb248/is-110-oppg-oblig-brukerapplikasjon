@@ -4,21 +4,22 @@ using System.Text;
 
 namespace is_110_oppg_oblig_test
 {
-    public class Student
+    // KRAV 7: Klasse  |  KRAV 9: Arv - Student arver fra Person
+    public class Student : Person
     {
-        public int StudentID { get; set; }
-        public string StudentNavn { get; set; }
-        public string StudentEpost { get; set; }
+        // KRAV 2: Auto-implementert egenskap
         public string Kurs { get; set; }
 
-        public Student(int studentID, string studentnavn, string studentepost, string kurs)
+        public Student(int id, string navn, string epost, string kurs)
+            : base(id, navn, epost)
         {
-            StudentID = studentID;
-            StudentNavn = studentnavn;
-            StudentEpost = studentepost;
             Kurs = kurs;
         }
 
-      
+        // KRAV 10: Polymorfisme - override av abstrakt metode fra Person
+        public override string VisInfo()
+        {
+            return $"Student {Id}: {Navn} ({Epost}) - Kurs: {Kurs}";
+        }
     }
 }
