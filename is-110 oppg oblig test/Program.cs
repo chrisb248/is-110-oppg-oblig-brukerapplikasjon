@@ -150,6 +150,7 @@ while (true)
             if (!int.TryParse(Console.ReadLine(), out int valg))
             {
                 Console.WriteLine("Ugyldig valg.");
+
                 break;
             }
 
