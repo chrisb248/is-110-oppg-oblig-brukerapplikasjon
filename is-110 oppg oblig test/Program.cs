@@ -2,8 +2,11 @@
 using is_110_oppg_oblig_test;
 using System.Threading.Channels;
 
+// KRAV 4: Kolleksjoner - List<T> for å holde mange objekter
+// KRAV 1: Variabler og datatyper - int, string, double, bool, DateTime
 List<Student> students = new List<Student>();
 
+// KRAV 7: Objekter - oppretter instanser av klassen Student
 var student1 = new Student(1, "Elias", "ELi@uia.no", "IS-110");
 var student2 = new Student(2, "Ola", "ola@uia.no", "IS-112");
 var student3 = new Student(3, "Kari", "kari@uia.no", "IS-110");
@@ -59,6 +62,7 @@ string emneNavn = ""; // Declare and initialize emneNavn before the loop
 
 
 
+// KRAV 5: Løkke - while-løkke for hovedmenyen
 while (true)
 {
     Console.WriteLine();
@@ -81,6 +85,7 @@ while (true)
     var choice = Console.ReadLine();
 
     if (choice == "0") break;
+    // KRAV 6: IF-betingelser - switch/case for menyvalg
     switch (choice)
     {
         case "1":
@@ -209,15 +214,18 @@ while (true)
     string? søke = Console.ReadLine();
     if (!string.IsNullOrWhiteSpace(søke))
     {
+        // KRAV 8: LINQ query-syntaks med where, orderby og select
+        var kursResultater = from k in kursene
+                             where (k.Fagkode?.Contains(søke, StringComparison.OrdinalIgnoreCase) ?? false)
+                                || (k.EmneNavn?.Contains(søke, StringComparison.OrdinalIgnoreCase) ?? false)
+                             orderby k.Fagkode
+                             select k;
+
         bool any = false;
-        foreach (var k in kursene)
+        foreach (var k in kursResultater)
         {
-            if ((k.Fagkode?.Contains(søke, StringComparison.OrdinalIgnoreCase) ?? false)
-                || (k.EmneNavn?.Contains(søke, StringComparison.OrdinalIgnoreCase) ?? false))
-            {
-                any = true;
-                Console.WriteLine($"{k.Fagkode} | {k.EmneNavn} | Studiepoeng: {k.Studiepoeng} | Kapasitet: {k.StudentKapasitet}");
-            }
+            any = true;
+            Console.WriteLine($"{k.Fagkode} | {k.EmneNavn} | Studiepoeng: {k.Studiepoeng} | Kapasitet: {k.StudentKapasitet}");
         }
         if (!any) Console.WriteLine("No course matches found.");
     }
@@ -232,17 +240,25 @@ while (true)
             string? search = Console.ReadLine();
             if (!string.IsNullOrWhiteSpace(search))
             {
-                bool found = false;
-                foreach (var b in books)
+                // KRAV 8: LINQ method-syntaks med Where, OrderBy og Select (projeksjon)
+                var bokResultater = books
+                    .Where(b => (b.Title?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false)
+                             || (b.Author?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false))
+                    .OrderBy(b => b.Title)
+                    .Select(b => new { b.Title, b.Author, b.Year, b.Price, Status = b.IsAvailable ? "Tilgjengelig" : "Utlånt" })
+                    .ToList();
+
+                if (bokResultater.Count == 0)
                 {
-                    if ((b.Title?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false)
-                        || (b.Author?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false))
+                    Console.WriteLine("No books match found.");
+                }
+                else
+                {
+                    foreach (var b in bokResultater)
                     {
-                        found = true;
-                        Console.WriteLine($"{b.Title} by {b.Author} ({b.Year}) - ${b.Price}");
+                        Console.WriteLine($"{b.Title} by {b.Author} ({b.Year}) - ${b.Price} [{b.Status}]");
                     }
                 }
-                if (!found) Console.WriteLine("No books match found.");
             }
             else
             {
@@ -400,18 +416,38 @@ while (true)
             Console.WriteLine($"Bok registrert: {tittel} av {forfatter}.");
             break;
 
-        case "10": // vis all studenter lærere og utvekslingsstudenter (polymorfisme)
-            // Bruk av polymorfisme: alle Person-objekter i én liste via IPerson-interfacet
+        case "10": // vis all studenter lærere og utvekslingsstudenter
+
+            // KRAV 11: Interface brukt som type - alle persontyper i én liste
             List<IPerson> allePersoner = new List<IPerson>();
             allePersoner.AddRange(students);
             allePersoner.AddRange(ansatte);
             allePersoner.AddRange(utstudenter);
 
-            Console.WriteLine("\nAlle personer i systemet (via polymorfisme):");
-            foreach (var person in allePersoner)
+            // LINQ: sorter alle personer etter navn
+            var sortert = allePersoner.OrderBy(p => p.Navn).ToList();
+
+            Console.WriteLine("\nAlle personer (sortert etter navn):");
+            foreach (var person in sortert)
             {
-                // VisInfo() kaller riktig override avhengig av faktisk type
-                Console.WriteLine($"  [{person.GetType().Name}] {person.VisInfo()}");
+                // KRAV 10: Polymorfisme - VisInfo() gir ulik output for Student, Ansatt, Utvekslingsstudent
+                    Console.WriteLine($"  {person.VisInfo()}");
+            }
+
+            // KRAV 8: LINQ query-syntaks med GroupBy
+            Console.WriteLine("\nStudenter gruppert etter kurs:");
+            var gruppert = from s in students
+                           group s by s.Kurs into g
+                           orderby g.Key
+                           select g;
+
+            foreach (var gruppe in gruppert)
+            {
+                Console.WriteLine($"  Kurs: {(string.IsNullOrEmpty(gruppe.Key) ? "Ingen" : gruppe.Key)}");
+                foreach (var s in gruppe)
+                {
+                    Console.WriteLine($"    {s.Id}: {s.Navn}");
+                }
             }
             break;
         case "11": // registrer ny student

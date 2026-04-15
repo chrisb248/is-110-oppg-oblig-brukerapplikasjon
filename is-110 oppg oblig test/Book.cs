@@ -9,7 +9,18 @@ namespace is_110_oppg_oblig_test
         public string Title { get; set; } = string.Empty;
         public string Author { get; set; } = string.Empty;
         public int Year { get; set; }
-        public double Price { get; set; }
+
+        // KRAV 3: Tilgangsmodifikator - private felt skjuler data, public property gir tilgang med validering
+        private double _price;
+        public double Price
+        {
+            get => _price;
+            set
+            {
+                if (value < 0) throw new ArgumentException("Pris kan ikke være negativ.");
+                _price = value;
+            }
+        }
 
         public bool IsAvailable { get; set; } = true;
 
@@ -20,6 +31,5 @@ namespace is_110_oppg_oblig_test
             Year = year;
             Price = price;
         }
-        record Loan(int BookIndex, int StudentId, DateTime Loaned, DateTime? Returned = null);
     }
 }
